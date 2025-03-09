@@ -1,15 +1,26 @@
 <?php
+include("functions.php");
 include("db.php");
+
 
 $name = $gender = $dob = $email = $password = $confpassword = $address = $state = $city = $pincode = "";
 $nameErr = $genderErr = $dobErr = $passwordErr = $confpasswordErr = $address = $stateErr = $cityErr = $pincodeErr = $emailErr = $addressErr = "";
 $passpattern = $namepattern = "";
 
+$selectedState = "";
+$state_id = "";
+
+if (isset($_POST["state"])) {
+    $selectedState = $_POST["state"];
+   
+}
 
 if (isset($_POST['submit'])) {
+
     // $name = $_POST['name'];
     if (!empty($_POST["name"])) {
         $name = test_input($_POST["name"]);
+
         $namepattern = "/^[a-zA-Z ]*$/"; // Example pattern
 
         if (!preg_match($namepattern, $name)) {
@@ -19,14 +30,14 @@ if (isset($_POST['submit'])) {
         $nameErr = "Name is required.";
     }
 
+
+
     // $gender = $_POST['gender'];
     if (empty($_POST["gender"])) {
         $genderErr = "gender is required";
     } else {
         $gender = test_input($_POST["gender"]);
     }
-    // var_dump($gender);
-    // die();
 
     // $dob = $_POST['dob'];
     if (empty($_POST["dob"])) {
@@ -42,25 +53,28 @@ if (isset($_POST['submit'])) {
         $email = test_input($_POST["email"]);
     }
 
-    // $password = $_POST['password'];
-    if (empty($_POST["password"])) {
+
+    //password validation
+    if (empty($_POST['password'])) {
+        $passwordErr = "Password is Required";
     } else {
-        $passwordErr = "Password Required";
-        $password = test_input($_POST["password"]);
-        $passpattern = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/";
+        $password = test_input($_POST['password']);
+        $passpattern = '/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.* )(?=.*^[a-zA-Z0-9]).{8,16}$/m';
         if (!preg_match($passpattern, $password)) {
-            $passwordErr = "Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, one digit, and one special character.";
+            $passwordErr = "Invalid password format";
         }
     }
-    // $confpassword = $_POST['confpassword'];
-    if (empty($_POST["confpassword"])) {
-        $confpasswordErr = "Re-enter password";
+
+    if (empty($_POST['confpassword'])) {
+        $confpasswordErr = "Please Confirm the Password";
     } else {
-        $confpassword = test_input($_POST["confpassword"]);
+        $confpassword = test_input($_POST['confpassword']);
         if ($confpassword != $password) {
-            $confpasswordErr = "password not matched";
+            $confpasswordErr = "Password not matched";
         }
     }
+
+
     // $address = $_POST['address'];
     if (empty($_POST["address"])) {
         $addressErr = "Address is required";
@@ -88,20 +102,28 @@ if (isset($_POST['submit'])) {
         $pincode = test_input($_POST["pincode"]);
     }
 
+
     if ($name != "" && $gender != "" && $dob != "" && $email != "" && $password != "" && $confpassword != "" && $address != "" && $state != "" && $city != "" && $pincode != "") {
+        // die("$name , $gender , $dob , $email , $password , $confpassword , $address , $state ,$city , $pincode");
+
         $insertQuery = "INSERT INTO users (name,gender,dob,email,password,confpassword,address,state,city,pincode) values ('$name','$gender','$dob','$email','$password','$confpassword','$address','$state','$city','$pincode')";
         $insertResult = mysqli_query($con, $insertQuery);
-        header("location:register.php");
+
+        if ($insertResult) {
+            // echo "frre";
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
+
+        // header("location:login.php?message=Form submitted successfully");
+
+        $_SESSION["message"] = "registered successfully";
+        header("location:login.php");
+    
     }
 }
 
-function test_input($data)
-{
-    $data = trim($data);
-    $data = htmlspecialchars($data);
-    $data = stripslashes($data);
-    return $data;
-}
+
 ?>
 
 
@@ -111,108 +133,130 @@ function test_input($data)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>regsistration form</title>
+    <title>registration form</title>
     <link rel="stylesheet" href="../bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/all.css">
-    <link rel="stylesheet" href="register.css">
-    <style>
-        /* form
-        {
-            width: 60%;
-            padding: 10px;
-            margin: auto;
-            background-color: aliceblue;
-        } 
-         .sub
-         {
-            font-size: 18px;
-            font-weight: 600;
-            background-color: antiquewhite;
-         }  */
-    </style>
+
+
 </head>
 
 <body>
     <div class="container-lg">
-        <form action="" method="post">
-            <div class="mb-2">
-                <div>Full Name</div>
-                <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
-                <span class="text-danger"><?php echo $nameErr; ?></span> <!-- Error message -->
-            </div>
 
-            <div class="mb-2">
-                <div>Gender</div>
-                <div class="form-control">
-                    <input type="radio" name="gender" value="Male" id="male" class="me-1" <?php echo ($gender == "Male") ? 'checked' : ''; ?>><label for="male" class="me-3">Male</label>
-                    <input type="radio" name="gender" value="Female" id="female" class="me-1" <?php echo ($gender == "Female") ? 'checked' : ''; ?>><label for="female" class="me-3">Female</label>
-                    <input type="radio" name="gender" value="Others" id="others" class="me-1" <?php echo ($gender == "Others") ? 'checked' : ''; ?>><label for="others">Others</label>
+        <div class="row">
+            <div class="col-12 col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header h4 text-primary">
+                        Register
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="post">
+
+                            <div class="mb-2">
+                                <div>Full Name</div>
+                                <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
+                                <span class="text-danger"><?php echo $nameErr; ?></span> <!-- Error message -->
+                            </div>
+
+                            <div class="mb-2">
+                                <div>Gender</div>
+                                <div class>
+                                    <div class="form-check form-check-inline"><input type="radio" name="gender" value="Male" id="male" class="form-check-input" <?php echo ($gender == "Male") ? 'checked' : ''; ?>><label for="male" class="me-3">Male</label></div>
+
+                                    <div class="form-check form-check-inline"><input type="radio" name="gender" value="Female" id="female" class="form-check-input" <?php echo ($gender == "Female") ? 'checked' : ''; ?>><label for="female" class="me-3">Female</label></div>
+
+                                    <div class="form-check form-check-inline"><input type="radio" name="gender" value="Others" id="others" class="form-check-input" <?php echo ($gender == "Others") ? 'checked' : ''; ?>><label for="others">Others</label></div>
+                                </div>
+                                <span class="text-danger"><?php echo $genderErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <div>Date of Birth</div>
+                                <input type="date" name="dob" class="form-control" value="<?php echo $dob ?>">
+                                <span class="text-danger"><?php echo $dobErr; ?></span>
+                            </div>
+                            <div class="mb-2">
+                                <div>Email</div>
+                                <input type="email" name="email" class="form-control" value="<?php echo $email ?>">
+                                <span class="text-danger"><?php echo $emailErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <div>Password</div>
+                                <input type="password" name="password" class="form-control" value="<?php echo $password ?>">
+                                <span class="text-danger"><?php echo $passwordErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <div>Confirm Password</div>
+                                <input type="password" name="confpassword" class="form-control" value="<?php echo $confpassword ?>">
+                                <span class="text-danger"><?php echo $confpasswordErr; ?></span>
+                            </div>
+                            <div class="mb-2">
+                                <div>Address</div>
+                                <textarea name="address" id="" class="form-control"><?php echo $address ?></textarea>
+                                <span class="text-danger"><?php echo $addressErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <div>Select your state</div>
+                                <select name="state" id="" class="form-control">
+
+                                    <?php
+                                    $stateQuery = "SELECT * from states";
+                                    $stateResult = mysqli_query($con, $stateQuery);
+
+                                    if (mysqli_num_rows($stateResult) > 0) {
+                                        while ($state = mysqli_fetch_assoc($stateResult)) {
+                                    ?>
+                                            <option value="<?php echo $state['state_id'] ?>" <?php echo ($state['state_name'] == $selectedState) ? 'selected' : '' ?>><?php echo $state['state_name'] ?></option>
+
+                                    <?php
+                                        }
+                                    }
+                                    ?>
+
+
+                                </select>
+                                <span class="text-danger"><?php echo $stateErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <div>select your city</div>
+                                <select name="city" id="" class="form-control">
+                                    <?php
+                                    $cityQuery = "SELECT * FROM city";
+                                    $cityResult = mysqli_query($con, $cityQuery);
+                                    if (mysqli_num_rows($cityResult) > 0) {
+                                        while ($city = mysqli_fetch_assoc($cityResult)) {
+                                            ?>
+                                            <option value="<?php echo $city['city_name'] ?>"><?php echo $city['city_name'] ?></option>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                                <span class="text-danger"><?php echo $cityErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <div>Pincode</div>
+                                <input type="text" name="pincode" class="form-control" value="<?php echo $pincode ?>">
+                                <span class="text-danger"><?php echo $pincodeErr; ?></span>
+                            </div>
+
+                            <div class="mb-2">
+                                <input type="submit" name="submit" value="submit" class="form-control btn-primary btn">
+                            </div>
+
+                        </form>
+                    </div>
                 </div>
-                <span class="text-danger"><?php echo $genderErr; ?></span>
             </div>
+        </div>
 
-            <div class="mb-2">
-                <div>Date of Birth</div>
-                <input type="date" name="dob" class="form-control" value="<?php echo $dob ?>">
-                <span class="text-danger"><?php echo $dobErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <div>Email</div>
-                <input type="email" name="email" class="form-control" value="<?php echo $email ?>">
-                <span class="text-danger"><?php echo $emailErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <div>Password</div>
-                <input type="password" name="password" class="form-control" value="<?php echo $password ?>">
-                <span class="text-danger"><?php echo $passwordErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <div>Confirm Password</div>
-                <input type="password" name="confpassword" class="form-control" value="<?php echo $confpassword ?>">
-                <span class="text-danger"><?php echo $confpasswordErr; ?></span>
-            </div>
-            <div class="mb-2">
-                <div>Address</div>
-                <textarea name="address" id="" class="form-control" value="<?php echo $address ?>"></textarea>
-                <span class="text-danger"><?php echo $addressErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <div>Select your state</div>
-                <select name="state" id="" class="form-control">
-                    <option value="" hidden></option>
-                    <option value="Gujarat" <?php echo ($state == 'Gujarat') ? 'selected' : '' ?>>Gujarat</option>
-                    <option value="Rajasthan" <?php echo ($state == 'Rajasthan') ? 'selected' : '' ?>>Rajasthan</option>
-                    <option value="Uttar Pradesh" <?php echo ($state == 'Uttar Pradesh') ? 'selected' : '' ?>>Uttar Pradesh</option>
-                    <option value="Madhya Pradesh" <?php echo ($state == 'Madhya Pradesh') ? 'selected' : '' ?>>Madhya Pradesh</option>
-                </select>
-                <span class="text-danger"><?php echo $stateErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <div>city</div>
-                <input type="text" name="city" class="form-control" value="<?php echo $city ?>">
-                <span class="text-danger"><?php echo $cityErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <div>Pincode</div>
-                <input type="text" name="pincode" class="form-control" value="<?php echo $pincode ?>">
-                <span class="text-danger"><?php echo $pincodeErr; ?></span>
-            </div>
-
-            <div class="mb-2">
-                <input type="submit" name="submit" value="SUBMIT" class="form-control sub">
-            </div>
-
-
-
-
-        </form>
     </div>
+    </div>
+
 </body>
 
 </html>

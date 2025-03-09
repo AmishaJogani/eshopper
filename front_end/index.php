@@ -89,7 +89,7 @@ include('header.php');
                 <div class="col-lg-4 col-md-6 pb-1">
                     <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;height:500px;">
                         <p class="text-right"><?php echo $category['category_count'] ?> Products</p>
-                        <a href="shop.php?category=<?php echo $category['cat_id']; ?>" class="cat-img position-relative overflow-hidden mb-3">
+                        <a href="shop.php?category=<?php echo $category['cat_id']; ?>&cat_name=<?php echo $category['cat_name'] ?>" class="cat-img position-relative overflow-hidden mb-3">
                             <img class="img-fluid" src="../back_end/uploads/<?php echo $category['cat_image']; ?>" alt="" style="height:500px;">
                         </a>
                         <h5 class="font-weight-semi-bold m-0"><?php echo $category['cat_name'] ?>

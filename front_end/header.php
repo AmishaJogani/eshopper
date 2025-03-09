@@ -116,7 +116,7 @@ include('db.php');
                                     while($category = mysqli_fetch_assoc($result))
                                     {
                                         ?>
-                                        <a href="shop.php?category=<?php echo $category['cat_id']; ?>" class="nav-item nav-link"><?php echo $category['cat_name'] ?></a>
+                                        <a href="shop.php?category=<?php echo $category['cat_id']; ?>&cat_name=<?php echo $category['cat_name'] ?>" class="nav-item nav-link"><?php echo $category['cat_name'] ?></a>
                                         <?php
                                     }
                                 }
@@ -140,8 +140,8 @@ include('db.php');
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="cart.html" class="dropdown-item">Shopping Cart</a>
-                                    <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                    <a href="cart.php" class="dropdown-item">Shopping Cart</a>
+                                    <a href="checkout.php" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
                             <a href="contact.php" class="nav-item nav-link">Contact</a>

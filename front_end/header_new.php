@@ -1,5 +1,12 @@
 <?php
-include('db.php');
+
+
+$user = getUserData();
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+} else {
+    $search = '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +34,11 @@ include('db.php');
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        .user {
+            border-radius: 50px;
+        }
+    </style>
 </head>
 
 <body>
@@ -69,9 +81,9 @@ include('db.php');
                 </a>
             </div>
             <div class="col-lg-6 col-6 text-left">
-                <form action="">
+                <form action="shop.php">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" class="form-control" placeholder="Search for products" name="search">
                         <div class="input-group-append">
                             <span class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
@@ -113,7 +125,7 @@ include('db.php');
                             if (mysqli_num_rows($categoryresult) > 0) {
                                 while ($category = mysqli_fetch_assoc($categoryresult)) {
                             ?>
-                                    <a href="shop.php?category=<?php echo $category['cat_id']; ?>" class="nav-item nav-link"><?php echo $category['cat_name'] ?></a>
+                                    <a href="shop.php?category=<?php echo $category['cat_id']; ?>&cat_name=<?php echo $category['cat_name'] ?>" class="nav-item nav-link"><?php echo $category['cat_name'] ?></a>
                             <?php
                                 }
                             }
@@ -137,15 +149,42 @@ include('db.php');
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="cart.html" class="dropdown-item">Shopping Cart</a>
-                                    <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                    <a href="cart.php" class="dropdown-item">Shopping Cart</a>
+                                    <a href="checkout.php" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0">
-                            <a href="login.php" class="nav-item nav-link">Login</a>
-                            <a href="register.php" class="nav-item nav-link">Register</a>
+                            <?php
+                            if ($user) {
+
+                            ?>
+
+                                <!-- profile/logout dropdown -->
+                                <div class="dropdown nav-item">
+                                    <a class="nav-link dropdown-toggle rounded-circle border btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                                        <?php
+                                        echo $user['name'];
+                                        ?>
+                                    </a>
+
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="#">Profile</a>
+                                        <a class="dropdown-item" href="#">Logout</a>
+                                    </div>
+                                </div>
+                                <!--profile/logout dropdown -->
+
+                            <?php
+                            } else {
+                            ?>
+                                <a href="login.php" class="nav-item nav-link">Login</a>
+                                <a href="register.php" class="nav-item nav-link">Register</a>
+                            <?php
+                            }
+                            ?>
+
                         </div>
                     </div>
                 </nav>
