@@ -1,7 +1,7 @@
 <?php
 include("db.php");
-include("functions.php");
 include("header_new.php");
+$isWishlisted = "";
 
 
 // dd($_SESSION);
@@ -9,10 +9,28 @@ include("header_new.php");
 if (isset($_SESSION['message'])) {
 
 
-    echo "<script> alert('Login Successfully')</script>";
+    echo "<script> alert('" . $_SESSION['message'] . "')</script>";
     unset($_SESSION['message']);
+}
 
-}  
+if(isset($_GET['action']) and $_GET['action'] == 'cart' and ($_GET['product_id']))
+{
+if(addToCart($_GET['product_id'])){
+
+    alert("Product added into cart successfully");
+    redirect('shop.php'); 
+
+}
+
+}
+
+if (isset($_GET['action']) and $_GET['action'] == 'wish' and ($_GET['product_id'])) {
+    if ($message = addToWish($_GET['product_id'])) {
+        alert($message);
+        redirect('detail.php');
+    }
+}
+
 
 
 if (isset($_GET['category'])) {
@@ -38,7 +56,17 @@ if (isset($_GET['cat_name'])) {
     $cat_name = 'Our Shop';
 }
 ?>
-
+<style>
+    .custom-size
+    {
+       font-size: 20px;
+       background-color: pink;
+       border-radius: 50px;
+       padding: 4px;
+       color: white;
+    }
+    
+</style>
 <!-- Page Header Start -->
 <div class="container-fluid bg-secondary mb-5">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 150px">
@@ -237,13 +265,16 @@ if (isset($_GET['cat_name'])) {
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <a href=""></a>
-                                <a href="detail.php?id=<?php echo $product['id'] ?>" class="btn btn-sm text-dark p-0 stretched-link"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                                <a href="detail.php?id=<?php echo $product['id'] ?>" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
 
                                 <?php
                                 if (getUserData()) {
 
                                 ?>
-                                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                    <a href="?action=cart&product_id=<?php echo $product['id']; ?>" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+
+                                    <a href="?action=wish&product_id=<?php echo $product['id']; ?>" class="btn btn-sm"><i class="fas fa-heart custom-size bg-primary heart-icon <?php echo $isWishlisted ? 'wishlisted' : ''; ?>"></i></a>
+     
                                 <?php
 
                                 }

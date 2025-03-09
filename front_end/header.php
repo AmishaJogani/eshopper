@@ -1,5 +1,9 @@
 <?php
 include('db.php');
+include('functions.php');
+$user = getUserData() ;
+$cartCount = cartCount();
+$wishCount = wishCount();
 
 ?>
 <!DOCTYPE html>
@@ -11,6 +15,8 @@ include('db.php');
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
+
+    
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
@@ -27,6 +33,8 @@ include('db.php');
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -81,13 +89,13 @@ include('db.php');
                 </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
+                <a href="wishlist.php" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"><?php echo $wishCount; ?></span>
                 </a>
-                <a href="" class="btn border">
+                <a href="cart.php" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"><?php echo $cartCount; ?></span>
                 </a>
             </div>
         </div>
@@ -147,8 +155,36 @@ include('db.php');
                             <a href="contact.php" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0">
-                            <a href="login.php" class="nav-item nav-link">Login</a>
-                            <a href="register.php" class="nav-item nav-link">Register</a>
+                            <?php
+                            if ($user) {
+
+                            ?>
+
+                                <!-- profile/logout dropdown -->
+                                <div class="dropdown nav-item">
+                                    <a class="nav-link dropdown-toggle border rounded-pill btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                                        <?php
+                                        echo $user['name'];
+                                        ?>
+                                    </a> 
+
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="">Profile</a>
+                                        <a class="dropdown-item" href="orders.php">My orders</a>
+                                        <a class="dropdown-item" href="logout.php">Logout</a>
+                                    </div>
+                                </div>
+                                <!--profile/logout dropdown -->
+
+                            <?php
+                            } else {
+                            ?>
+                                <a href="login.php" class="nav-item nav-link">Login</a>
+                                <a href="register.php" class="nav-item nav-link">Register</a>
+                            <?php
+                            }
+                            ?>
+
                         </div>
                     </div>
                 </nav>

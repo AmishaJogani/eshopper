@@ -7,12 +7,16 @@ $name = $gender = $dob = $email = $password = $confpassword = $address = $state 
 $nameErr = $genderErr = $dobErr = $passwordErr = $confpasswordErr = $address = $stateErr = $cityErr = $pincodeErr = $emailErr = $addressErr = "";
 $passpattern = $namepattern = "";
 
-$selectedState = "";
-$state_id = "";
+$selectedStateId = "";
+$selectedCity = "";
+
 
 if (isset($_POST["state"])) {
-    $selectedState = $_POST["state"];
-   
+    $selectedStateId = $_POST["state"];
+}
+// dd($selectedStateId);
+if (isset($_POST["city"])) {
+    $selectedCity = $_POST["city"];
 }
 
 if (isset($_POST['submit'])) {
@@ -51,6 +55,13 @@ if (isset($_POST['submit'])) {
         $emailErr = "email is required";
     } else {
         $email = test_input($_POST["email"]);
+    }
+
+    $emailQuery = "SELECT * from users where email='$email'";
+    $emailResult = mysqli_query($con, $emailQuery);
+
+    if (mysqli_num_rows($emailResult) > 0) {
+        $emailErr = "Email already exists";
     }
 
 
@@ -106,6 +117,7 @@ if (isset($_POST['submit'])) {
     if ($name != "" && $gender != "" && $dob != "" && $email != "" && $password != "" && $confpassword != "" && $address != "" && $state != "" && $city != "" && $pincode != "") {
         // die("$name , $gender , $dob , $email , $password , $confpassword , $address , $state ,$city , $pincode");
 
+        
         $insertQuery = "INSERT INTO users (name,gender,dob,email,password,confpassword,address,state,city,pincode) values ('$name','$gender','$dob','$email','$password','$confpassword','$address','$state','$city','$pincode')";
         $insertResult = mysqli_query($con, $insertQuery);
 
@@ -115,11 +127,9 @@ if (isset($_POST['submit'])) {
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
         }
 
-        // header("location:login.php?message=Form submitted successfully");
 
         $_SESSION["message"] = "registered successfully";
         header("location:login.php");
-    
     }
 }
 
@@ -208,29 +218,29 @@ if (isset($_POST['submit'])) {
                                     if (mysqli_num_rows($stateResult) > 0) {
                                         while ($state = mysqli_fetch_assoc($stateResult)) {
                                     ?>
-                                            <option value="<?php echo $state['state_id'] ?>" <?php echo ($state['state_name'] == $selectedState) ? 'selected' : '' ?>><?php echo $state['state_name'] ?></option>
+                                    <option value="<?php echo $state['state_id'] ?>" <?php if ($state['state_id'] == $selectedStateId) {echo 'selected';} ?>><?php echo $state['state_name'] ?>
+                                    </option>
 
                                     <?php
-                                        }
+                                     }
                                     }
                                     ?>
-
-
                                 </select>
                                 <span class="text-danger"><?php echo $stateErr; ?></span>
                             </div>
 
                             <div class="mb-2">
                                 <div>select your city</div>
-                                <select name="city" id="" class="form-control">
+                                <select name="city" class="form-control">
                                     <?php
-                                    $cityQuery = "SELECT * FROM city";
+                                     $cityQuery = "SELECT * FROM city";
+                                    // $cityQuery = "SELECT * FROM city WHERE state_id = $selectedStateId";
                                     $cityResult = mysqli_query($con, $cityQuery);
                                     if (mysqli_num_rows($cityResult) > 0) {
                                         while ($city = mysqli_fetch_assoc($cityResult)) {
-                                            ?>
-                                            <option value="<?php echo $city['city_name'] ?>"><?php echo $city['city_name'] ?></option>
-                                            <?php
+                                    ?>
+                                            <option value="<?php echo $city['city_name'] ?>"<?php if($city['city_name']==$selectedCity){echo 'selected';} ?>><?php echo $city['city_name'] ?></option>
+                                    <?php
                                         }
                                     }
                                     ?>

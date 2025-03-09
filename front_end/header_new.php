@@ -1,7 +1,10 @@
 <?php
-
-
+include("functions.php");
 $user = getUserData();
+$cartCount = cartCount();
+$wishCount = wishCount();
+
+
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
 } else {
@@ -34,11 +37,7 @@ if (isset($_GET['search'])) {
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-    <style>
-        .user {
-            border-radius: 50px;
-        }
-    </style>
+    
 </head>
 
 <body>
@@ -93,13 +92,13 @@ if (isset($_GET['search'])) {
                 </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
+                <a href="wishlist.php" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"><?php echo $wishCount ?></span>
                 </a>
-                <a href="" class="btn border">
+                <a href="cart.php" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge"><?php echo $cartCount; ?></span>
                 </a>
             </div>
         </div>
@@ -153,7 +152,7 @@ if (isset($_GET['search'])) {
                                     <a href="checkout.php" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="contact.php" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0">
                             <?php
@@ -163,15 +162,16 @@ if (isset($_GET['search'])) {
 
                                 <!-- profile/logout dropdown -->
                                 <div class="dropdown nav-item">
-                                    <a class="nav-link dropdown-toggle rounded-circle border btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                                    <a class="nav-link dropdown-toggle border rounded-pill btn btn-secondary" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                                         <?php
                                         echo $user['name'];
                                         ?>
-                                    </a>
+                                    </a> 
 
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="#">Profile</a>
-                                        <a class="dropdown-item" href="#">Logout</a>
+                                        <a class="dropdown-item" href="">Profile</a>
+                                        <a class="dropdown-item" href="orders.php">My orders</a>
+                                        <a class="dropdown-item" href="logout.php">Logout</a>
                                     </div>
                                 </div>
                                 <!--profile/logout dropdown -->
